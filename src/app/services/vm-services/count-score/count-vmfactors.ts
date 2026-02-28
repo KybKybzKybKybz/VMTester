@@ -38,6 +38,8 @@ export class CountVMFactors {
       totalScore += weight;
     }
 
+    if(suspiciousFlags.includes("1. Eventuellt Misstänkt GPU") && suspiciousFlags.includes("2. Lågt antal CPU-kärnor")) totalScore = 40;
+
     const maxScore = 50;
     const riskPercent = Math.min(100, Math.round((totalScore / maxScore) * 100));
 

@@ -66,8 +66,8 @@ export class EnvironmentScanService {
   ];
 
   // Svaga signaler, kan vara fysiska maskiner också (software rendering)
-  const weakSignalRenderers = [
-    'microsoft basic render driver', 'x.org', 'llvmpipe', 'software rasterizer'
+  const weakSignalRenderersAndVendors = [
+    'microsoft basic render driver', 'x.org', 'llvmpipe', 'software rasterizer', 'mesa'
   ];
 
   // Vendorer som kan indikera VM
@@ -79,7 +79,7 @@ export class EnvironmentScanService {
   if (renderer && vmOnlyRenderers.some(r => renderer.includes(r)) ||
       vendor && suspiciousVendors.some(v => vendor.includes(v))) {
     result.suspiciousFlags.push("1. Misstänkt GPU");
-  } else if (renderer && weakSignalRenderers.some(r => renderer.includes(r))) {
+  } else if (renderer && weakSignalRenderersAndVendors.some(r => renderer.includes(r))) {
     result.suspiciousFlags.push("1. Eventuellt Misstänkt GPU");
   } else {
     result.unsuspiciousFlags.push("1. GPU ok");
