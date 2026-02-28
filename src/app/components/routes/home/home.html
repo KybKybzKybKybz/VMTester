@@ -33,7 +33,8 @@
     </form>
 </div>
 } @else if(examActive){
-    <div class="fixed inset-0 w-screen h-screen bg-black/50 z-50 flex items-center justify-center">
+    <div class="inset-0 w-screen h-screen flex items-center justify-center"
+    [ngClass]="{'hidden bg-transparent z-0' : !examActive, 'fixed bg-black/50 z-50': examActive}">
 
     </div>
 }
