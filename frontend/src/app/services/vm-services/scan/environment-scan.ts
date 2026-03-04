@@ -1,24 +1,45 @@
 import { Injectable } from '@angular/core';
 
 export interface ScanResult {
-  suspiciousFlags: string[];
-  unsuspiciousFlags: string[];
+  susFlags: string[];
+  okFlags: string[];
   avoidedFlags: string[];
   possibleAvoidedReasons: string[];
+  raw?: {
+    userAgent: string;
+    platform: string;
+    cores?: number;
+    ram?: number;
+  };
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class EnvironmentScanService {
+  private detectPlatformFallback(): string {
+  const ua = navigator.userAgent.toLowerCase();
+  if (ua.includes("win")) return "Windows";
+  if (ua.includes("mac")) return "Mac";
+  if (ua.includes("linux")) return "Linux";
+  if (ua.includes("iphone") || ua.includes("ipad")) return "iOS";
+  if (ua.includes("android")) return "Android";
+  return "Unknown";
+}
 
   async runFullScan(): Promise<ScanResult> {
 
     const result: ScanResult = {
-      suspiciousFlags: [],
-      unsuspiciousFlags: [],
+      susFlags: [],
+      okFlags: [],
       avoidedFlags: [],
       possibleAvoidedReasons: [],
+      raw: {
+        userAgent: navigator.userAgent,
+        platform: (navigator as any).userAgentData?.platform ?? this.detectPlatformFallback(),
+        cores: navigator.hardwareConcurrency,
+        ram: (navigator as any).deviceMemory
+      }
     };
 
     this.runGpuTypeChecks(result);
@@ -32,6 +53,8 @@ export class EnvironmentScanService {
     return result;
   }
 
+  
+
   // ================================
   // 1️⃣ GPU CHECK
   // ================================
@@ -41,7 +64,7 @@ export class EnvironmentScanService {
     canvas.getContext('experimental-webgl')) as WebGLRenderingContext | null;
 
   if (!gl) {
-    result.unsuspiciousFlags.push("1. Ingen WebGL");
+    result.okFlags.push("1. Ingen WebGL");
     return;
   }
 
@@ -78,11 +101,11 @@ export class EnvironmentScanService {
 
   if (renderer && vmOnlyRenderers.some(r => renderer.includes(r)) ||
       vendor && suspiciousVendors.some(v => vendor.includes(v))) {
-    result.suspiciousFlags.push("1. Misstänkt GPU");
+    result.susFlags.push("1. Misstänkt GPU");
   } else if (renderer && weakSignalRenderersAndVendors.some(r => renderer.includes(r))) {
-    result.suspiciousFlags.push("1. Eventuellt Misstänkt GPU");
+    result.susFlags.push("1. Eventuellt Misstänkt GPU");
   } else {
-    result.unsuspiciousFlags.push("1. GPU ok");
+    result.okFlags.push("1. GPU ok");
   }
 
   console.log(`GPU Check -> Renderer: ${renderer}, Vendor: ${vendor}`);
@@ -98,16 +121,16 @@ export class EnvironmentScanService {
 
     if (typeof cores === "number") {
       cores <= 4
-        ? result.suspiciousFlags.push("2. Lågt antal CPU-kärnor")
-        : result.unsuspiciousFlags.push("2. Tillräckligt med CPU-kärnor");
+        ? result.susFlags.push("2. Lågt antal CPU-kärnor")
+        : result.okFlags.push("2. Tillräckligt med CPU-kärnor");
     } else {
       result.avoidedFlags.push("2. CPU info otillgänglig");
     }
 
     if (typeof ram === "number") {
       ram <= 4
-        ? result.suspiciousFlags.push("2. Litet RAM")
-        : result.unsuspiciousFlags.push("2. Tillräckligt med RAM");
+        ? result.okFlags.push("2. Litet RAM")
+        : result.okFlags.push("2. Tillräckligt med RAM");
     } else {
       result.avoidedFlags.push("2. RAM info otillgänglig");
     }
@@ -137,9 +160,9 @@ export class EnvironmentScanService {
     }
 
     if (score >= 2) {
-      result.suspiciousFlags.push(`3. ${reasons.join(", ")}`);
+      result.susFlags.push(`3. ${reasons.join(", ")}`);
     } else {
-      result.unsuspiciousFlags.push("3. Skärm ok");
+      result.okFlags.push("3. Skärm ok");
     }
   }
 
@@ -156,9 +179,9 @@ export class EnvironmentScanService {
     ];
 
     if (suspiciousUA.some(s => ua.includes(s))) {
-      result.suspiciousFlags.push("4. Misstänkt UserAgent");
+      result.susFlags.push("4. Misstänkt UserAgent");
     } else {
-      result.unsuspiciousFlags.push("4. Platform/UserAgent ok");
+      result.okFlags.push("4. Platform/UserAgent ok");
     }
   }
 
@@ -171,9 +194,9 @@ export class EnvironmentScanService {
     const mimeTypes = navigator.mimeTypes;
 
     if (plugins.length < 3 || mimeTypes.length < 2) {
-      result.suspiciousFlags.push("5. Få Plugins/MIME types");
+      result.susFlags.push("5. Få Plugins/MIME types");
     } else {
-      result.unsuspiciousFlags.push("5. Plugins ok");
+      result.okFlags.push("5. Plugins ok");
     }
   }
 
@@ -187,9 +210,9 @@ export class EnvironmentScanService {
     const end = performance.now();
 
     if (end - start > 200) {
-      result.suspiciousFlags.push("6. Seg CPU");
+      result.susFlags.push("6. Seg CPU");
     } else {
-      result.unsuspiciousFlags.push("6. Prestanda ok");
+      result.okFlags.push("6. Prestanda ok");
     }
   }
 
@@ -204,10 +227,10 @@ export class EnvironmentScanService {
       const hasCamera = devices.some(d => d.kind === "videoinput");
       const hasMic = devices.some(d => d.kind === "audioinput");
 
-      if (!hasCamera || !hasMic) {
-        result.suspiciousFlags.push("7. Saknar mediaenheter");
+      if (!hasCamera && !hasMic) {
+        result.susFlags.push("7. Saknar mediaenheter");
       } else {
-        result.unsuspiciousFlags.push("7. Mediaenheter ok");
+        result.okFlags.push("7. Mediaenheter ok");
       }
 
     } catch {

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { CountVMFactors } from './count-vmfactors';
+import { CountVMFactors } from './count-vmfactors-outdated';
 
 describe('CountVMFactors', () => {
   let service: CountVMFactors;
