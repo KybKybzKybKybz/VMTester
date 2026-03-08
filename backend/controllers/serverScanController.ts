@@ -74,6 +74,12 @@ export async function serverScan(req: Request, res: Response): Promise<Response>
     avoidedFlags.push("8.4 Klientplattform saknas");
   }
 
+  if (serverUserAgent && chUaNormalized && !serverUserAgent.includes(chUaNormalized)) {
+    susFlags.push("8.5 UserAgent och Client Hints UA matchar inte");
+  } else {
+      okFlags.push("8.5 UA och CH-UA matchar");
+  }
+
   // 9. TLS / Connection FP
 
   if (req.socket && typeof (req.socket as any).getCipher === "function") {
@@ -139,7 +145,12 @@ export async function serverScan(req: Request, res: Response): Promise<Response>
     points += flagWeights.tlsSuspicious;
   }
 
-  // 8 Media Devices
+   // 8 UA vs CH-UA mismatch
+  if (susFlags.includes("8.5 UserAgent och Client Hints UA matchar inte")) {
+    points += 1; // Bonuspoäng för mismatch
+  }
+
+  // 9 Media Devices
   if (susFlags.some((f: string) => f.startsWith("7. Saknar mediaenheter"))) {
     points += flagWeights.mediaDevicesMissing;
   }
