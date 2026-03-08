@@ -27,7 +27,7 @@ export class EnvironmentScanService {
   return "Unknown";
 }
 
-  async runFullScan(): Promise<ScanResult> {
+  async runClientScan(): Promise<ScanResult> {
 
     const result: ScanResult = {
       susFlags: [],
@@ -55,9 +55,7 @@ export class EnvironmentScanService {
 
   
 
-  // ================================
-  // 1️⃣ GPU CHECK
-  // ================================
+  //1 Gpu Check
  private runGpuTypeChecks(result: ScanResult) {
   const canvas = document.createElement('canvas');
   const gl = (canvas.getContext('webgl') ||
@@ -81,19 +79,16 @@ export class EnvironmentScanService {
   const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)?.toLowerCase();
   const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL)?.toLowerCase();
 
-  // Renderers som nästan bara förekommer i VM
   const vmOnlyRenderers = [
     'vboxsvga', 'vboxvga', 'vmsvga',
     'vmware', 'virtualbox', 'qemu',
     'bochs', 'virtual gpu', 'parallels', 'qxl'
   ];
 
-  // Svaga signaler, kan vara fysiska maskiner också (software rendering)
   const weakSignalRenderersAndVendors = [
     'microsoft basic render driver', 'x.org', 'llvmpipe', 'software rasterizer', 'mesa'
   ];
 
-  // Vendorer som kan indikera VM
   const suspiciousVendors = [
     'vmware', 'virtualbox', 'parallels',
     'qemu', 'bochs'
@@ -111,9 +106,7 @@ export class EnvironmentScanService {
   console.log(`GPU Check -> Renderer: ${renderer}, Vendor: ${vendor}`);
 }
 
-  // ================================
-  // 2️⃣ CPU & RAM
-  // ================================
+  //2 Cpu & Ram
   private runCpuMemoryChecks(result: ScanResult) {
 
     const cores = navigator.hardwareConcurrency;
@@ -136,9 +129,7 @@ export class EnvironmentScanService {
     }
   }
 
-  // ================================
-  // 3️⃣ SCREEN
-  // ================================
+ //3 Screen
   private runScreenSizeChecks(result: ScanResult) {
 
     let score = 0;
@@ -166,28 +157,26 @@ export class EnvironmentScanService {
     }
   }
 
-  // ================================
-  // 4️⃣ PLATFORM / UA
-  // ================================
+ //4 Platform/Ua
   private runPlatformChecks(result: ScanResult) {
 
     const ua = navigator.userAgent.toLowerCase();
 
-    const suspiciousUA = [
-      "vmware", "virtualbox", "qemu",
-      "parallels", "headless"
-    ];
+   const suspiciousUA = [
+    "headless", "headlesschrome", "phantomjs", "node-fetch",
+    "vmware", "virtualbox", "qemu", "parallels"
+  ];
 
     if (suspiciousUA.some(s => ua.includes(s))) {
-      result.susFlags.push("4. Misstänkt UserAgent");
+      result.susFlags.push("4. Misstänkt UserAgent På Klienten");
     } else {
       result.okFlags.push("4. Platform/UserAgent ok");
     }
   }
 
-  // ================================
-  // 5️⃣ PLUGINS
-  // ================================
+
+  //5 Plugins
+
   private runPluginMimeChecks(result: ScanResult) {
 
     const plugins = navigator.plugins;
@@ -200,9 +189,9 @@ export class EnvironmentScanService {
     }
   }
 
-  // ================================
-  // 6️⃣ PERFORMANCE
-  // ================================
+
+  //6 Performence
+
   private runPerformanceChecks(result: ScanResult) {
 
     const start = performance.now();
@@ -216,9 +205,9 @@ export class EnvironmentScanService {
     }
   }
 
-  // ================================
-  // 7️⃣ MEDIA DEVICES (async)
-  // ================================
+
+  //7 Media Devices
+
   private async runMediaDevicesCheck(result: ScanResult) {
 
     try {

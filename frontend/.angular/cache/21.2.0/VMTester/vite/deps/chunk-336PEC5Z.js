@@ -2,7 +2,7 @@ import {
   PlatformLocation,
   XhrFactory,
   parseCookieValue
-} from "./chunk-S4R7SVV3.js";
+} from "./chunk-UTWBMDNX.js";
 import {
   APP_BOOTSTRAP_LISTENER,
   ApplicationRef,
@@ -15,39 +15,41 @@ import {
   Injector,
   NgModule,
   NgZone,
-  Observable,
   PendingTasks,
   ResourceImpl,
   RuntimeError,
   TracingService,
   TransferState,
-  __objRest,
-  __spreadProps,
-  __spreadValues,
   assertInInjectionContext,
   computed,
-  concatMap,
   encapsulateResourceError,
-  filter,
-  finalize,
   formatRuntimeError,
   inject,
   linkedSignal,
   makeEnvironmentProviders,
   makeStateKey,
-  map,
-  of,
   performanceMarkFeature,
   runInInjectionContext,
   setClassMetadata,
   signal,
-  switchMap,
   truncateMiddle,
   ɵɵdefineInjectable,
   ɵɵdefineInjector,
   ɵɵdefineNgModule,
   ɵɵinject
-} from "./chunk-R7WWNCF2.js";
+} from "./chunk-B3NO66XW.js";
+import {
+  Observable,
+  __objRest,
+  __spreadProps,
+  __spreadValues,
+  concatMap,
+  filter,
+  finalize,
+  map,
+  of,
+  switchMap
+} from "./chunk-PJVWDKLX.js";
 
 // node_modules/@angular/common/fesm2022/_module-chunk.mjs
 var HttpHeaders = class _HttpHeaders {
@@ -222,6 +224,12 @@ function assertValidHeaders(headers) {
     }
   }
 }
+var HttpContextToken = class {
+  defaultValue;
+  constructor(defaultValue) {
+    this.defaultValue = defaultValue;
+  }
+};
 var HttpContext = class {
   map = /* @__PURE__ */ new Map();
   set(token, value) {
@@ -1888,6 +1896,15 @@ function provideHttpClient(...features) {
   }
   return makeEnvironmentProviders(providers);
 }
+function withInterceptors(interceptorFns) {
+  return makeHttpFeature(HttpFeatureKind.Interceptors, interceptorFns.map((interceptorFn) => {
+    return {
+      provide: HTTP_INTERCEPTOR_FNS,
+      useValue: interceptorFn,
+      multi: true
+    };
+  }));
+}
 var LEGACY_INTERCEPTOR_FN = new InjectionToken(typeof ngDevMode !== "undefined" && ngDevMode ? "LEGACY_INTERCEPTOR_FN" : "");
 function withInterceptorsFromDi() {
   return makeHttpFeature(HttpFeatureKind.LegacyInterceptors, [{
@@ -1932,6 +1949,30 @@ function withJsonpSupport() {
     provide: HTTP_INTERCEPTOR_FNS,
     useValue: jsonpInterceptorFn,
     multi: true
+  }]);
+}
+function withRequestsMadeViaParent() {
+  return makeHttpFeature(HttpFeatureKind.RequestsMadeViaParent, [{
+    provide: HttpBackend,
+    useFactory: () => {
+      const handlerFromParent = inject(HttpHandler, {
+        skipSelf: true,
+        optional: true
+      });
+      if (ngDevMode && handlerFromParent === null) {
+        throw new Error("withRequestsMadeViaParent() can only be used when the parent injector also configures HttpClient");
+      }
+      return handlerFromParent;
+    }
+  }]);
+}
+function withFetch() {
+  return makeHttpFeature(HttpFeatureKind.Fetch, [FetchBackend, {
+    provide: FETCH_BACKEND,
+    useExisting: FetchBackend
+  }, {
+    provide: HttpBackend,
+    useExisting: FetchBackend
   }]);
 }
 var HttpClientXsrfModule = class _HttpClientXsrfModule {
@@ -2345,7 +2386,44 @@ function appendMissingHeadersDetection(url, headers, headersToInclude) {
 }
 
 export {
+  HttpHeaders,
+  HttpContextToken,
+  HttpContext,
+  HttpUrlEncodingCodec,
+  HttpParams,
+  HttpRequest,
+  HttpEventType,
+  HttpResponseBase,
+  HttpHeaderResponse,
+  HttpResponse,
+  HttpErrorResponse,
+  HttpStatusCode,
+  FetchBackend,
+  HttpXhrBackend,
+  HTTP_INTERCEPTORS,
+  HTTP_ROOT_INTERCEPTOR_FNS,
+  REQUESTS_CONTRIBUTE_TO_STABILITY,
+  HttpBackend,
+  HttpInterceptorHandler,
+  HttpHandler,
+  HttpClient,
+  JsonpClientBackend,
+  JsonpInterceptor,
+  HttpXsrfTokenExtractor,
+  HttpFeatureKind,
+  provideHttpClient,
+  withInterceptors,
+  withInterceptorsFromDi,
+  withXsrfConfiguration,
+  withNoXsrfProtection,
+  withJsonpSupport,
+  withRequestsMadeViaParent,
+  withFetch,
+  HttpClientXsrfModule,
+  HttpClientModule,
+  HttpClientJsonpModule,
   httpResource,
+  HTTP_TRANSFER_CACHE_ORIGIN_MAP,
   withHttpTransferCache
 };
-//# sourceMappingURL=chunk-CX7VYDJA.js.map
+//# sourceMappingURL=chunk-336PEC5Z.js.map

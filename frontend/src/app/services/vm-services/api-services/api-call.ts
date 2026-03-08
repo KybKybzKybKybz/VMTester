@@ -20,10 +20,10 @@ type ServerActionResponseType = {
 export class ApiCall {
   constructor(private http: HttpClient, private environmentScan: EnvironmentScanService ){}
 
-  runFullScanAndSendToServer(): Observable<ServerActionResponseType>{
-    return from(this.environmentScan.runFullScan()).pipe(
+  runFullScan(): Observable<ServerActionResponseType>{
+    return from(this.environmentScan.runClientScan()).pipe(
       switchMap((clientScan: ScanResult) => {
-        return from(this.http.post<ServerActionResponseType>('http://localhost:3000/api/backend-vm', {clientScan}, {withCredentials: true}))
+        return from(this.http.post<ServerActionResponseType>('/api/server-scan', clientScan, {headers: { 'Content-Type': 'application/json'}, withCredentials: true}))
       })
     )
   }

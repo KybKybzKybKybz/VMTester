@@ -1,0 +1,25 @@
+{
+  "name": "vmtester",
+  "version": "1.0.0",
+  "description": "This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.4.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"npm run start --prefix backend\" \"npm run start --prefix frontend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KybKybzKybKybz/VMTester.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/KybKybzKybKybz/VMTester/issues"
+  },
+  "homepage": "https://github.com/KybKybzKybKybz/VMTester#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
