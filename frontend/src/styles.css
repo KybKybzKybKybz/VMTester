@@ -1,6 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "tailwindcss";
+@import 'tailwindcss';
 
 app-root {
   display: flex;
@@ -13,5 +13,5 @@ app-root {
 }
 
 main {
-    flex-grow: 1;
+  flex-grow: 1;
 }

@@ -1,6 +1,4 @@
 import { Routes } from '@angular/router';
 import { Home } from './components/routes/home/home';
 
-export const routes: Routes = [
-    {path: '', component: Home}
-];
+export const routes: Routes = [{ path: '', component: Home }];

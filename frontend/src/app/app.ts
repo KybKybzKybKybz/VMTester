@@ -7,7 +7,7 @@ import { Footer } from './components/core/footer/footer';
   selector: 'app-root',
   imports: [RouterOutlet, Header, Footer],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
 })
 export class App {
   protected readonly title = signal('VMTester');

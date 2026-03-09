@@ -501,9 +501,9 @@ import {
   ɵɵtwoWayProperty,
   ɵɵvalidateAttribute,
   ɵɵviewQuery,
-  ɵɵviewQuerySignal
-} from "./chunk-B3NO66XW.js";
-import "./chunk-PJVWDKLX.js";
+  ɵɵviewQuerySignal,
+} from './chunk-B3NO66XW.js';
+import './chunk-PJVWDKLX.js';
 export {
   ANIMATION_MODULE_TYPE,
   APP_BOOTSTRAP_LISTENER,
@@ -1009,5 +1009,5 @@ export {
   ɵɵtwoWayProperty,
   ɵɵvalidateAttribute,
   ɵɵviewQuery,
-  ɵɵviewQuerySignal
+  ɵɵviewQuerySignal,
 };

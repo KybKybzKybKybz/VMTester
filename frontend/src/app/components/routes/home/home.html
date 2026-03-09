@@ -1,41 +1,47 @@
-
-@if(!examActive){
-    <div class="w-screen h-[80vh] md:h-[calc(100vh-200px)] flex flex-col items-center justify-center">
-    <form (submit)="onSubmit($event)" class="w-[75vw] lg:w-[33vw] h-auto md:h-1/3 xl:h-1/2 border rounded-md shadow-md flex flex-col p-4 md:p-2 gap-4 justify-evenly items-center">
-        <div class=" w-full flex justify-center items-center">
+@if (!examActive) {
+  <div class="w-screen h-[80vh] md:h-[calc(100vh-200px)] flex flex-col items-center justify-center">
+    <form
+      (submit)="onSubmit($event)"
+      class="w-[75vw] lg:w-[33vw] h-auto md:h-1/3 xl:h-1/2 border rounded-md shadow-md flex flex-col p-4 md:p-2 gap-4 justify-evenly items-center"
+    >
+      <div class="w-full flex justify-center items-center">
         <h2 class="font-semibold text-3xl">Välkommen!</h2>
-        </div>
+      </div>
 
-        <div class="flex flex-col w-full items-center justify-center">
-            <label class="sr-only" for="form-code"></label>
-            <input
-                class="border border-gray-400 rounded-md p-2 w-4/5 mb-2 placeholder:text-sm text-sm"
-                type="text" 
-                id="form-code"
-                placeholder="Skriv in provkoden"
-                [formField]="testForm.code"
-            >
-            @if(testForm.code().touched() && testForm.code().invalid()){
-                <p class="text-red-600 text-sm">
-                    {{testForm.code().errors()[0]?.message}}
-                </p>
-            }
-        </div>
+      <div class="flex flex-col w-full items-center justify-center">
+        <label class="sr-only" for="form-code"></label>
+        <input
+          class="border border-gray-400 rounded-md p-2 w-4/5 mb-2 placeholder:text-sm text-sm"
+          type="text"
+          id="form-code"
+          placeholder="Skriv in provkoden"
+          [formField]="testForm.code"
+        />
+        @if (testForm.code().touched() && testForm.code().invalid()) {
+          <p class="text-red-600 text-sm">
+            {{ testForm.code().errors()[0]?.message }}
+          </p>
+        }
+      </div>
 
-        <div class="w-full flex items-center justify-center">
-            <button [disabled]="testForm().invalid() || testForm().pending()" 
-                class="cursor-pointer scale-100 active:scale-95 w-4/5 p-2 border border-gray-400 text-white bg-orange-300 rounded-md shadow-md"
-                type="submit"
-                [ngClass]="{'bg-orange-300': !testForm().pending(), 'bg-gray-400 cursor-not-allowed': testForm().pending()}"
-                >Starta Provet
-            </button>
-        </div>
+      <div class="w-full flex items-center justify-center">
+        <button
+          [disabled]="testForm().invalid() || testForm().pending()"
+          class="cursor-pointer scale-100 active:scale-95 w-4/5 p-2 border border-gray-400 text-white bg-orange-300 rounded-md shadow-md"
+          type="submit"
+          [ngClass]="{
+            'bg-orange-300': !testForm().pending(),
+            'bg-gray-400 cursor-not-allowed': testForm().pending(),
+          }"
+        >
+          Starta Provet
+        </button>
+      </div>
     </form>
-</div>
-} @else if(examActive){
-    <div class="inset-0 w-screen h-screen flex items-center justify-center"
-    [ngClass]="{'hidden bg-transparent z-0' : !examActive, 'fixed bg-black/50 z-50': examActive}">
-
-    </div>
+  </div>
+} @else if (examActive) {
+  <div
+    class="inset-0 w-screen h-screen flex items-center justify-center"
+    [ngClass]="{ 'hidden bg-transparent z-0': !examActive, 'fixed bg-black/50 z-50': examActive }"
+  ></div>
 }
-

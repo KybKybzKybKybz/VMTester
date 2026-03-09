@@ -12,9 +12,13 @@ interface FlagWeights {
   mediaDevicesMissing: number;
 }
 
-export async function serverScan(req: Request, res: Response): Promise<Response> {
+export async function serverScan(
+  req: Request,
+  res: Response,
+): Promise<Response> {
   // Nummer 1-7: client-side, 8 och uppåt: server-side
-  const { susFlags, okFlags, avoidedFlags, possibleAvoidedReasons, raw } = req.body;
+  const { susFlags, okFlags, avoidedFlags, possibleAvoidedReasons, raw } =
+    req.body;
 
   if (!susFlags || !okFlags || !avoidedFlags || !possibleAvoidedReasons) {
     return res.status(400).send("Missing required fields");
@@ -22,23 +26,34 @@ export async function serverScan(req: Request, res: Response): Promise<Response>
 
   // 8. Req UA & Client Hints - Mot Headless/VM
 
-  const serverUserAgent = req.headers?.["user-agent"]?.toLowerCase() || '';
-  const rawChUa = req.headers['sec-ch-ua'];
-  const chUa = Array.isArray(rawChUa) ? rawChUa[0] : rawChUa || '';
-  const rawChPlatform = req.headers['sec-ch-ua-platform'];
-  const chPlatform = Array.isArray(rawChPlatform) ? rawChPlatform[0] : rawChPlatform || '';
+  const serverUserAgent = req.headers?.["user-agent"]?.toLowerCase() || "";
+  const rawChUa = req.headers["sec-ch-ua"];
+  const chUa = Array.isArray(rawChUa) ? rawChUa[0] : rawChUa || "";
+  const rawChPlatform = req.headers["sec-ch-ua-platform"];
+  const chPlatform = Array.isArray(rawChPlatform)
+    ? rawChPlatform[0]
+    : rawChPlatform || "";
 
   const chUaNormalized = chUa.toLowerCase();
-  const chPlatformNormalized = (chPlatform || '').replace(/"/g, '').trim().toLowerCase();
+  const chPlatformNormalized = (chPlatform || "")
+    .replace(/"/g, "")
+    .trim()
+    .toLowerCase();
 
   const suspiciousUA = [
-    "headless", "headlesschrome", "phantomjs", "node-fetch",
-    "vmware", "virtualbox", "qemu", "parallels"
+    "headless",
+    "headlesschrome",
+    "phantomjs",
+    "node-fetch",
+    "vmware",
+    "virtualbox",
+    "qemu",
+    "parallels",
   ];
 
   if (!serverUserAgent) susFlags.push("8. Ingen UserAgent på servern");
 
-  if (suspiciousUA.some(ua => serverUserAgent.includes(ua))) {
+  if (suspiciousUA.some((ua) => serverUserAgent.includes(ua))) {
     susFlags.push("8. Misstänkt UserAgent på servern");
   } else {
     okFlags.push("8. Ingen misstänkt UserAgent på servern");
@@ -47,7 +62,9 @@ export async function serverScan(req: Request, res: Response): Promise<Response>
   if (!chUaNormalized || !chPlatformNormalized) {
     susFlags.push("8.1 Saknas Client Hints (sec-ch-ua/sec-ch-ua-platform)");
   } else {
-    okFlags.push(`8.1 Client Hints ok (UA: ${chUaNormalized}, Platform: ${chPlatformNormalized})`);
+    okFlags.push(
+      `8.1 Client Hints ok (UA: ${chUaNormalized}, Platform: ${chPlatformNormalized})`,
+    );
   }
 
   const clientUAFlag = susFlags.includes("4. Misstänkt UserAgent På Klienten");
@@ -61,23 +78,29 @@ export async function serverScan(req: Request, res: Response): Promise<Response>
   }
 
   if (raw.platform) {
-    const clientPlatform = (raw.platform || '').trim().toLowerCase();
+    const clientPlatform = (raw.platform || "").trim().toLowerCase();
 
     if (clientPlatform !== chPlatformNormalized) {
       susFlags.push(
-        `8.4 Plattform mismatch: Klient rapporterar '${clientPlatform}', server rapporterar '${chPlatformNormalized}'`
+        `8.4 Plattform mismatch: Klient rapporterar '${clientPlatform}', server rapporterar '${chPlatformNormalized}'`,
       );
     } else {
-      okFlags.push(`8.4 Plattform matchar mellan klient och server (${clientPlatform})`);
+      okFlags.push(
+        `8.4 Plattform matchar mellan klient och server (${clientPlatform})`,
+      );
     }
   } else {
     avoidedFlags.push("8.4 Klientplattform saknas");
   }
 
-  if (serverUserAgent && chUaNormalized && !serverUserAgent.includes(chUaNormalized)) {
+  if (
+    serverUserAgent &&
+    chUaNormalized &&
+    !serverUserAgent.includes(chUaNormalized)
+  ) {
     susFlags.push("8.5 UserAgent och Client Hints UA matchar inte");
   } else {
-      okFlags.push("8.5 UA och CH-UA matchar");
+    okFlags.push("8.5 UA och CH-UA matchar");
   }
 
   // 9. TLS / Connection FP
@@ -87,7 +110,7 @@ export async function serverScan(req: Request, res: Response): Promise<Response>
     const suspiciousCiphers = [
       "TLS_NULL_WITH_NULL_NULL",
       "TLS_RSA_WITH_NULL_MD5",
-      "TLS_RSA_WITH_NULL_SHA"
+      "TLS_RSA_WITH_NULL_SHA",
     ];
 
     if (suspiciousCiphers.includes(cipherInfo.name)) {
@@ -96,7 +119,9 @@ export async function serverScan(req: Request, res: Response): Promise<Response>
       okFlags.push(`9. TLS-cipher suite ok (${cipherInfo.name})`);
     }
   } else {
-    avoidedFlags.push("9. Kunde inte läsa TLS-cipher suite – kanske HTTP istället för HTTPS");
+    avoidedFlags.push(
+      "9. Kunde inte läsa TLS-cipher suite – kanske HTTP istället för HTTPS",
+    );
   }
 
   const flagWeights: FlagWeights = {
@@ -108,13 +133,16 @@ export async function serverScan(req: Request, res: Response): Promise<Response>
     uaSuspicious: 2,
     clientHintsMissing: 1,
     tlsSuspicious: 2,
-    mediaDevicesMissing: 1
+    mediaDevicesMissing: 1,
   };
 
   let points = 0;
 
   // 1 GPU
-  if (susFlags.includes("1. Misstänkt GPU") || susFlags.includes("1. Eventuellt Misstänkt GPU")) {
+  if (
+    susFlags.includes("1. Misstänkt GPU") ||
+    susFlags.includes("1. Eventuellt Misstänkt GPU")
+  ) {
     points += flagWeights.gpu;
   }
 
@@ -123,15 +151,21 @@ export async function serverScan(req: Request, res: Response): Promise<Response>
   if (raw.ram && raw.ram <= 4) points += flagWeights.ram;
 
   // 3 Screen
-  if (susFlags.some((f: string) => f.startsWith("3."))) points += flagWeights.screen;
+  if (susFlags.some((f: string) => f.startsWith("3.")))
+    points += flagWeights.screen;
 
   // 4 Platform / UA
-  if (susFlags.includes("4. Misstänkt UserAgent På Klienten") || susFlags.includes("8. Misstänkt UserAgent på servern")) {
+  if (
+    susFlags.includes("4. Misstänkt UserAgent På Klienten") ||
+    susFlags.includes("8. Misstänkt UserAgent på servern")
+  ) {
     points += flagWeights.uaSuspicious;
   }
 
   // 5 Client Hints
-  if (susFlags.includes("8.1 Saknas Client Hints (sec-ch-ua/sec-ch-ua-platform)")) {
+  if (
+    susFlags.includes("8.1 Saknas Client Hints (sec-ch-ua/sec-ch-ua-platform)")
+  ) {
     points += flagWeights.clientHintsMissing;
   }
 
@@ -145,7 +179,7 @@ export async function serverScan(req: Request, res: Response): Promise<Response>
     points += flagWeights.tlsSuspicious;
   }
 
-   // 8 UA vs CH-UA mismatch
+  // 8 UA vs CH-UA mismatch
   if (susFlags.includes("8.5 UserAgent och Client Hints UA matchar inte")) {
     points += 1; // Bonuspoäng för mismatch
   }
@@ -156,15 +190,33 @@ export async function serverScan(req: Request, res: Response): Promise<Response>
   }
 
   // Bonus Score För Speciellt Misstänksamma kombinationer
-  if (susFlags.includes("8.1 Saknas Client Hints") && susFlags.includes("4. Misstänkt UserAgent På Klienten")) {
+  if (
+    susFlags.includes("8.1 Saknas Client Hints") &&
+    susFlags.includes("4. Misstänkt UserAgent På Klienten")
+  ) {
     points += 4;
   }
 
   let risk: "None" | "Low" | "Medium" | "High" = "None";
 
-  if (points >= 8 || (susFlags.includes("1. Misstänkt GPU") && susFlags.includes("2. Lågt antal CPU-kärnor"))) risk = "High";
+  if (
+    points >= 8 ||
+    (susFlags.includes("1. Misstänkt GPU") &&
+      susFlags.includes("2. Lågt antal CPU-kärnor"))
+  )
+    risk = "High";
   else if (points >= 5) risk = "Medium";
   else if (points >= 2) risk = "Low";
 
-  return res.status(200).json({ susFlags, okFlags, avoidedFlags, possibleAvoidedReasons, points, risk, success: true });
+  return res
+    .status(200)
+    .json({
+      susFlags,
+      okFlags,
+      avoidedFlags,
+      possibleAvoidedReasons,
+      points,
+      risk,
+      success: true,
+    });
 }
