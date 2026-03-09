@@ -113,8 +113,12 @@ export class Home {
         console.log('Användaren försökte kopiera');
       };
 
+      //const getTextAtTestStart = navigator.clipboard.readText(); läser data vid event start t.ex av provet.
       const onPaste = function (e: ClipboardEvent) {
         e.preventDefault();
+        const pastedText = e.clipboardData?.getData("text");
+        //Kan kolla om användaren har något i clipboard som inte finns i provet
+        console.log("Användaren försökte klistra in:", pastedText);
         console.log('Användaren försökte klistra in');
       };
       const onFullscreenChange = () => {
