@@ -21,6 +21,8 @@ const PORT = process.env.PORT || 3000;
 //http://192.168.2.101 i proxy-config
 // I frontend package json ng serve --host 0.0.0.0 --port 4200 --proxy-config proxy.config.json
 //3000, "0.0.0.0", () => VID ÖPPEN PORT FÖR VM
-app.listen(PORT, () => {
+
+//KOLLAR UPP CPU TRÅDAR VARNING EFTERSOM CHROMEBOOKS TYDLIGEN KAN VARA AS DÅLIGA
+app.listen(3000, "0.0.0.0", () => {
   console.log(`Server is running on port ${PORT}`);
 });

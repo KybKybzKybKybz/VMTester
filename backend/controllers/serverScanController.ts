@@ -59,8 +59,10 @@ export async function serverScan(
     okFlags.push("8. Ingen misstänkt UserAgent på servern");
   }
 
-  if (!chUaNormalized || !chPlatformNormalized) {
-    susFlags.push("8.1 Saknas Client Hints (sec-ch-ua/sec-ch-ua-platform)");
+  if (!chUaNormalized) {
+    susFlags.push("8.1 Saknas Client Hints (sec-ch-ua)");
+  } else if(!chPlatformNormalized){
+    susFlags.push("8.1 Saknas Client Hints (sec-ch-ua-platform)");
   } else {
     okFlags.push(
       `8.1 Client Hints ok (UA: ${chUaNormalized}, Platform: ${chPlatformNormalized})`,
@@ -144,7 +146,7 @@ if (uaBrowser !== "unknown" && chBrowser !== "unknown" && uaBrowser !== chBrowse
   "TLS_ECDH_RSA_WITH_NULL_SHA",
   "TLS_ECDHE_ECDSA_WITH_NULL_SHA",
   "TLS_ECDHE_RSA_WITH_NULL_SHA",
-  "TLS_RSA_WITH_AES_128_CBC_SHA" ,      // äldre AES CBC
+  "TLS_RSA_WITH_AES_128_CBC_SHA" ,
   "TLS_RSA_WITH_AES_256_CBC_SHA",
   "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
   "TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
@@ -203,8 +205,12 @@ if (uaBrowser !== "unknown" && chBrowser !== "unknown" && uaBrowser !== chBrowse
 
   // 5 Client Hints
   if (
-    susFlags.includes("8.1 Saknas Client Hints (sec-ch-ua/sec-ch-ua-platform)")
+    susFlags.includes("8.1 Saknas Client Hints (sec-ch-ua)")
   ) {
+    points += flagWeights.clientHintsMissing;
+  }
+
+  if(susFlags.includes("8.1 Saknas Client Hints (sec-ch-ua-platform)")){
     points += flagWeights.clientHintsMissing;
   }
 
@@ -238,14 +244,17 @@ if (uaBrowser !== "unknown" && chBrowser !== "unknown" && uaBrowser !== chBrowse
 
   let risk: "None" | "Low" | "Medium" | "High" = "None";
 
-  if (
-    points >= 8 ||
-    (susFlags.includes("1. Misstänkt GPU") &&
-      susFlags.includes("2. Lågt antal CPU-kärnor"))
-  )
-    risk = "High";
+  if (points >= 8) risk = "High";
   else if (points >= 5) risk = "Medium";
   else if (points >= 2) risk = "Low";
+  if(susFlags.includes("1. Misstänkt GPU") && susFlags.includes("2. Lågt antal Logiska CPU-trådar")){
+    risk = "High"
+    points = 10;
+  }
+  if(susFlags.includes("1. Eventuellt Misstänkt GPU") && susFlags.includes("2. Lågt antal Logiska CPU-trådar")){
+    risk = "High"
+    points = 10;
+  }
 
   return res
     .status(200)

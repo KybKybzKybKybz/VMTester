@@ -3,4 +3,5 @@ export const allowedOrigins: string[] = [
   "http://localhost:4200",
   "http://192.168.2.101:4200",
   "http://192.168.56.1:4200",
+  "http://192.168.39.178:4200"
 ];

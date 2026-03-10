@@ -120,7 +120,7 @@ export class EnvironmentScanService {
 
     if (typeof cores === 'number') {
       cores <= 4
-        ? result.susFlags.push('2. Lågt antal CPU-kärnor')
+        ? result.susFlags.push('2. Lågt antal Logiska CPU-trådar')
         : result.okFlags.push('2. Tillräckligt med CPU-kärnor');
     } else {
       result.avoidedFlags.push('2. CPU info otillgänglig');
