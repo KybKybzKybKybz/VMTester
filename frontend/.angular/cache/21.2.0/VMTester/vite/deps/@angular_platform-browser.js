@@ -33,13 +33,15 @@ import {
   withHttpTransferCacheOptions,
   withI18nSupport,
   withIncrementalHydration,
-  withNoHttpTransferCache,
-} from './chunk-ZYMZX4L7.js';
-import './chunk-336PEC5Z.js';
-import './chunk-6X55DICD.js';
-import { getDOM } from './chunk-UTWBMDNX.js';
-import './chunk-B3NO66XW.js';
-import './chunk-PJVWDKLX.js';
+  withNoHttpTransferCache
+} from "./chunk-GIBMBSWX.js";
+import "./chunk-WL3NRIAZ.js";
+import "./chunk-DRSTYXQE.js";
+import {
+  getDOM
+} from "./chunk-ZQG2AHXC.js";
+import "./chunk-B3NO66XW.js";
+import "./chunk-PJVWDKLX.js";
 export {
   BrowserModule,
   By,
@@ -76,5 +78,5 @@ export {
   HammerGesturesPlugin as ɵHammerGesturesPlugin,
   KeyEventsPlugin as ɵKeyEventsPlugin,
   SharedStylesHost as ɵSharedStylesHost,
-  getDOM as ɵgetDOM,
+  getDOM as ɵgetDOM
 };

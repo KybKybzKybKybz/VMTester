@@ -19,11 +19,11 @@ export interface ScanResult {
 export class EnvironmentScanService {
   private detectPlatformFallback(): string {
     const ua = navigator.userAgent.toLowerCase();
-    if (ua.includes('win')) return 'Windows';
-    if (ua.includes('mac')) return 'Mac';
-    if (ua.includes('linux')) return 'Linux';
-    if (ua.includes('iphone') || ua.includes('ipad')) return 'iOS';
-    if (ua.includes('android')) return 'Android';
+    if (ua.includes('win')) return 'windows';
+    if (ua.includes('mac')) return 'mac';
+    if (ua.includes('linux')) return 'linux';
+    if (ua.includes('iphone') || ua.includes('ipad')) return 'ios';
+    if (ua.includes('android')) return 'android';
     return 'Unknown';
   }
 
@@ -35,7 +35,7 @@ export class EnvironmentScanService {
       possibleAvoidedReasons: [],
       raw: {
         userAgent: navigator.userAgent,
-        platform: (navigator as any).userAgentData?.platform ?? this.detectPlatformFallback(),
+        platform: (navigator as any).userAgentData?.platform.toLowerCase() ?? this.detectPlatformFallback(),
         cores: navigator.hardwareConcurrency,
         ram: (navigator as any).deviceMemory,
       },

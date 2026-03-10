@@ -25,12 +25,12 @@ export class ApiCall {
   runFullScan(): Observable<ServerActionResponseType> {
     return from(this.environmentScan.runClientScan()).pipe(
       switchMap((clientScan: ScanResult) => {
-        return from(
+        return(
           this.http.post<ServerActionResponseType>('/api/server-scan', clientScan, {
             headers: { 'Content-Type': 'application/json' },
             withCredentials: true,
-          }),
-        );
+          })
+        )
       }),
     );
   }

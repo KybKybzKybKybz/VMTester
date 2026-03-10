@@ -12,7 +12,6 @@ import {
   SchemaPathTree,
 } from '@angular/forms/signals';
 import { StartFullscreen } from '../../../services/vm-services/start-fullscreen/start-fullscreen';
-import { CountVMFactors } from '../../../services/vm-services/count-score/count-vmfactors-outdated';
 import { ApiCall } from '../../../services/vm-services/api-services/api-call';
 
 @Component({
@@ -49,6 +48,11 @@ export class Home {
   okFlags: string[] = [];
   avoidedFlags: string[] = [];
   possibleAvoidedReasons: string[] = [];
+  serverUa: string = ""
+  chNormalized: string = ""
+  chPlatform: string =""
+  clientUa: string = ""
+  clientPlatform: string = ""
 
   errorMsg: string = '';
 
@@ -65,11 +69,13 @@ export class Home {
           this.avoidedFlags = result.avoidedFlags;
           this.possibleAvoidedReasons = result.possibleAvoidedReasons;
 
-          console.log(this.susFlags);
-          console.log(this.okFlags);
-          console.log(this.avoidedFlags);
-          console.log(this.risk);
-          console.log(this.points);
+        console.group("VM Scan Result");
+          console.log("Sus Flags:", this.susFlags);
+          console.log("Ok Flags:", this.okFlags);
+          console.log("Avoided Flags:", this.avoidedFlags);
+          console.log("Risk:", this.risk);
+          console.log("Points:", this.points);
+        console.groupEnd();
 
           if (this.risk === 'High') {
             this.examActive = false;

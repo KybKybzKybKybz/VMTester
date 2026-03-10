@@ -93,25 +93,64 @@ export async function serverScan(
     avoidedFlags.push("8.4 Klientplattform saknas");
   }
 
-  if (
-    serverUserAgent &&
-    chUaNormalized &&
-    !serverUserAgent.includes(chUaNormalized)
-  ) {
-    susFlags.push("8.5 UserAgent och Client Hints UA matchar inte");
-  } else {
-    okFlags.push("8.5 UA och CH-UA matchar");
-  }
+  function extractBrowserFromUA(ua: string) {
+  ua = ua.toLowerCase();
+
+  if (ua.includes("chrome")) return "chrome";
+  if (ua.includes("firefox")) return "firefox";
+  if (ua.includes("safari") && !ua.includes("chrome")) return "safari";
+  if (ua.includes("edg")) return "edge";
+
+  return "unknown";
+}
+
+function extractBrowserFromCH(ch: string) {
+  ch = ch.toLowerCase();
+
+  if (ch.includes("google chrome")) return "chrome";
+  if (ch.includes("chromium")) return "chrome";
+  if (ch.includes("firefox")) return "firefox";
+  if (ch.includes("safari")) return "safari";
+  if (ch.includes("edge")) return "edge";
+
+  return "unknown";
+}
+
+const uaBrowser = extractBrowserFromUA(serverUserAgent);
+const chBrowser = extractBrowserFromCH(chUaNormalized);
+
+if (uaBrowser !== "unknown" && chBrowser !== "unknown" && uaBrowser !== chBrowser) {
+  susFlags.push("8.5 UA och Client Hints mismatch");
+} else {
+  okFlags.push("8.5 UA och CH-UA matchar");
+}
 
   // 9. TLS / Connection FP
 
   if (req.socket && typeof (req.socket as any).getCipher === "function") {
     const cipherInfo = (req.socket as any).getCipher();
     const suspiciousCiphers = [
-      "TLS_NULL_WITH_NULL_NULL",
-      "TLS_RSA_WITH_NULL_MD5",
-      "TLS_RSA_WITH_NULL_SHA",
-    ];
+  "TLS_NULL_WITH_NULL_NULL",
+  "TLS_RSA_WITH_NULL_MD5",
+  "TLS_RSA_WITH_NULL_SHA",
+  "TLS_RSA_WITH_RC4_128_MD5",
+  "TLS_RSA_WITH_RC4_128_SHA",
+  "TLS_RSA_WITH_3DES_EDE_CBC_SHA",
+  "TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA",
+  "TLS_DH_RSA_WITH_3DES_EDE_CBC_SHA",
+  "TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA",
+  "TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA",
+  "TLS_ECDH_ECDSA_WITH_NULL_SHA",
+  "TLS_ECDH_RSA_WITH_NULL_SHA",
+  "TLS_ECDHE_ECDSA_WITH_NULL_SHA",
+  "TLS_ECDHE_RSA_WITH_NULL_SHA",
+  "TLS_RSA_WITH_AES_128_CBC_SHA" ,      // äldre AES CBC
+  "TLS_RSA_WITH_AES_256_CBC_SHA",
+  "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
+  "TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
+  "TLS_DHE_DSS_WITH_AES_128_CBC_SHA",
+  "TLS_DHE_DSS_WITH_AES_256_CBC_SHA",
+];
 
     if (suspiciousCiphers.includes(cipherInfo.name)) {
       susFlags.push("9. Misstänkt TLS-cipher suite");

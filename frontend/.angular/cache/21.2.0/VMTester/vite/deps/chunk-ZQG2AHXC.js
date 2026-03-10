@@ -4,23 +4,8 @@ import {
   InjectionToken,
   inject,
   setClassMetadata,
-  ɵɵdefineInjectable,
-} from './chunk-B3NO66XW.js';
-
-// node_modules/@angular/common/fesm2022/_xhr-chunk.mjs
-function parseCookieValue(cookieStr, name) {
-  name = encodeURIComponent(name);
-  for (const cookie of cookieStr.split(';')) {
-    const eqIndex = cookie.indexOf('=');
-    const [cookieName, cookieValue] =
-      eqIndex == -1 ? [cookie, ''] : [cookie.slice(0, eqIndex), cookie.slice(eqIndex + 1)];
-    if (cookieName.trim() === name) {
-      return decodeURIComponent(cookieValue);
-    }
-  }
-  return null;
-}
-var XhrFactory = class {};
+  ɵɵdefineInjectable
+} from "./chunk-B3NO66XW.js";
 
 // node_modules/@angular/common/fesm2022/_platform_location-chunk.mjs
 var _DOM = null;
@@ -30,10 +15,11 @@ function getDOM() {
 function setRootDomAdapter(adapter) {
   _DOM ??= adapter;
 }
-var DomAdapter = class {};
+var DomAdapter = class {
+};
 var PlatformLocation = class _PlatformLocation {
   historyGo(relativePosition) {
-    throw new Error(ngDevMode ? 'Not implemented' : '');
+    throw new Error(ngDevMode ? "Not implemented" : "");
   }
   static ɵfac = function PlatformLocation_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _PlatformLocation)();
@@ -41,31 +27,19 @@ var PlatformLocation = class _PlatformLocation {
   static ɵprov = ɵɵdefineInjectable({
     token: _PlatformLocation,
     factory: () => (() => inject(BrowserPlatformLocation))(),
-    providedIn: 'platform',
+    providedIn: "platform"
   });
 };
 (() => {
-  (typeof ngDevMode === 'undefined' || ngDevMode) &&
-    setClassMetadata(
-      PlatformLocation,
-      [
-        {
-          type: Injectable,
-          args: [
-            {
-              providedIn: 'platform',
-              useFactory: () => inject(BrowserPlatformLocation),
-            },
-          ],
-        },
-      ],
-      null,
-      null,
-    );
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(PlatformLocation, [{
+    type: Injectable,
+    args: [{
+      providedIn: "platform",
+      useFactory: () => inject(BrowserPlatformLocation)
+    }]
+  }], null, null);
 })();
-var LOCATION_INITIALIZED = new InjectionToken(
-  typeof ngDevMode !== 'undefined' && ngDevMode ? 'Location Initialized' : '',
-);
+var LOCATION_INITIALIZED = new InjectionToken(typeof ngDevMode !== "undefined" && ngDevMode ? "Location Initialized" : "");
 var BrowserPlatformLocation = class _BrowserPlatformLocation extends PlatformLocation {
   _location;
   _history;
@@ -79,14 +53,14 @@ var BrowserPlatformLocation = class _BrowserPlatformLocation extends PlatformLoc
     return getDOM().getBaseHref(this._doc);
   }
   onPopState(fn) {
-    const window2 = getDOM().getGlobalEventTarget(this._doc, 'window');
-    window2.addEventListener('popstate', fn, false);
-    return () => window2.removeEventListener('popstate', fn);
+    const window2 = getDOM().getGlobalEventTarget(this._doc, "window");
+    window2.addEventListener("popstate", fn, false);
+    return () => window2.removeEventListener("popstate", fn);
   }
   onHashChange(fn) {
-    const window2 = getDOM().getGlobalEventTarget(this._doc, 'window');
-    window2.addEventListener('hashchange', fn, false);
-    return () => window2.removeEventListener('hashchange', fn);
+    const window2 = getDOM().getGlobalEventTarget(this._doc, "window");
+    window2.addEventListener("hashchange", fn, false);
+    return () => window2.removeEventListener("hashchange", fn);
   }
   get href() {
     return this._location.href;
@@ -136,37 +110,42 @@ var BrowserPlatformLocation = class _BrowserPlatformLocation extends PlatformLoc
   static ɵprov = ɵɵdefineInjectable({
     token: _BrowserPlatformLocation,
     factory: () => (() => new _BrowserPlatformLocation())(),
-    providedIn: 'platform',
+    providedIn: "platform"
   });
 };
 (() => {
-  (typeof ngDevMode === 'undefined' || ngDevMode) &&
-    setClassMetadata(
-      BrowserPlatformLocation,
-      [
-        {
-          type: Injectable,
-          args: [
-            {
-              providedIn: 'platform',
-              useFactory: () => new BrowserPlatformLocation(),
-            },
-          ],
-        },
-      ],
-      () => [],
-      null,
-    );
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(BrowserPlatformLocation, [{
+    type: Injectable,
+    args: [{
+      providedIn: "platform",
+      useFactory: () => new BrowserPlatformLocation()
+    }]
+  }], () => [], null);
 })();
 
+// node_modules/@angular/common/fesm2022/_xhr-chunk.mjs
+function parseCookieValue(cookieStr, name) {
+  name = encodeURIComponent(name);
+  for (const cookie of cookieStr.split(";")) {
+    const eqIndex = cookie.indexOf("=");
+    const [cookieName, cookieValue] = eqIndex == -1 ? [cookie, ""] : [cookie.slice(0, eqIndex), cookie.slice(eqIndex + 1)];
+    if (cookieName.trim() === name) {
+      return decodeURIComponent(cookieValue);
+    }
+  }
+  return null;
+}
+var XhrFactory = class {
+};
+
 export {
-  parseCookieValue,
-  XhrFactory,
   getDOM,
   setRootDomAdapter,
   DomAdapter,
   PlatformLocation,
   LOCATION_INITIALIZED,
   BrowserPlatformLocation,
+  parseCookieValue,
+  XhrFactory
 };
-//# sourceMappingURL=chunk-UTWBMDNX.js.map
+//# sourceMappingURL=chunk-ZQG2AHXC.js.map
