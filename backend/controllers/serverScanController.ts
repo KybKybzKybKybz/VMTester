@@ -204,13 +204,7 @@ if (uaBrowser !== "unknown" && chBrowser !== "unknown" && uaBrowser !== chBrowse
   }
 
   // 5 Client Hints
-  if (
-    susFlags.includes("8.1 Saknas Client Hints (sec-ch-ua)")
-  ) {
-    points += flagWeights.clientHintsMissing;
-  }
-
-  if(susFlags.includes("8.1 Saknas Client Hints (sec-ch-ua-platform)")){
+  if (susFlags.some((f: string) => f.startsWith("8.1 Saknas Client Hints"))) {
     points += flagWeights.clientHintsMissing;
   }
 
@@ -225,7 +219,7 @@ if (uaBrowser !== "unknown" && chBrowser !== "unknown" && uaBrowser !== chBrowse
   }
 
   // 8 UA vs CH-UA mismatch
-  if (susFlags.includes("8.5 UserAgent och Client Hints UA matchar inte")) {
+  if (susFlags.includes("8.5 UA och Client Hints mismatch")) {
     points += 1; // Bonuspoäng för mismatch
   }
 
@@ -236,10 +230,19 @@ if (uaBrowser !== "unknown" && chBrowser !== "unknown" && uaBrowser !== chBrowse
 
   // Bonus Score För Speciellt Misstänksamma kombinationer
   if (
-    susFlags.includes("8.1 Saknas Client Hints") &&
+    susFlags.some((f: string) => f.startsWith("8.1 Saknas Client Hints")) &&
     susFlags.includes("4. Misstänkt UserAgent På Klienten")
   ) {
     points += 4;
+  }
+
+  const gpuSuspicious =
+    susFlags.includes("1. Misstänkt GPU") ||
+    susFlags.includes("1. Eventuellt Misstänkt GPU");
+  const lowCpuThreads = susFlags.includes("2. Lågt antal Logiska CPU-trådar");
+
+  if (gpuSuspicious && lowCpuThreads) {
+    points = Math.max(points, 10);
   }
 
   let risk: "None" | "Low" | "Medium" | "High" = "None";
@@ -247,14 +250,6 @@ if (uaBrowser !== "unknown" && chBrowser !== "unknown" && uaBrowser !== chBrowse
   if (points >= 8) risk = "High";
   else if (points >= 5) risk = "Medium";
   else if (points >= 2) risk = "Low";
-  if(susFlags.includes("1. Misstänkt GPU") && susFlags.includes("2. Lågt antal Logiska CPU-trådar")){
-    risk = "High"
-    points = 10;
-  }
-  if(susFlags.includes("1. Eventuellt Misstänkt GPU") && susFlags.includes("2. Lågt antal Logiska CPU-trådar")){
-    risk = "High"
-    points = 10;
-  }
 
   return res
     .status(200)
