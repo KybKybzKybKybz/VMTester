@@ -23,6 +23,6 @@ const PORT = process.env.PORT || 3000;
 //3000, "0.0.0.0", () => VID ÖPPEN PORT FÖR VM
 
 //KOLLAR UPP CPU TRÅDAR VARNING EFTERSOM CHROMEBOOKS TYDLIGEN KAN VARA AS DÅLIGA
-app.listen(3000, "0.0.0.0", () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on port ${PORT}`);
 });

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef, signal } from '@angular/core';
+import { Component, ChangeDetectorRef, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   form,
@@ -20,7 +20,7 @@ import { ApiCall } from '../../../services/vm-services/api-services/api-call';
   templateUrl: './home.html',
   styleUrls: ['./home.css'],
 })
-export class Home {
+export class Home implements OnDestroy {
   constructor(
     private apiCall: ApiCall,
     private cdr: ChangeDetectorRef,
@@ -48,13 +48,50 @@ export class Home {
   okFlags: string[] = [];
   avoidedFlags: string[] = [];
   possibleAvoidedReasons: string[] = [];
-  serverUa: string = ""
-  chNormalized: string = ""
-  chPlatform: string =""
-  clientUa: string = ""
-  clientPlatform: string = ""
 
   errorMsg: string = '';
+
+  private listenersAttached = false;
+
+  private onCopy = (e: ClipboardEvent) => {
+    e.preventDefault();
+    console.log('Användaren försökte kopiera');
+  };
+
+  private onPaste = (e: ClipboardEvent) => {
+    e.preventDefault();
+    const pastedText = e.clipboardData?.getData('text');
+    console.log('Användaren försökte klistra in:', pastedText);
+  };
+
+  private onFullscreenChange = () => {
+    if (!document.fullscreenElement) {
+      this.examActive = false;
+      this.examStatus = 'Fullskärm avslutad – prov avbrutet';
+      this.cdr.detectChanges();
+      this.removeExamListeners();
+    }
+  };
+
+  private addExamListeners() {
+    if (this.listenersAttached) return;
+    document.addEventListener('fullscreenchange', this.onFullscreenChange);
+    document.addEventListener('copy', this.onCopy);
+    document.addEventListener('paste', this.onPaste);
+    this.listenersAttached = true;
+  }
+
+  private removeExamListeners() {
+    if (!this.listenersAttached) return;
+    document.removeEventListener('fullscreenchange', this.onFullscreenChange);
+    document.removeEventListener('copy', this.onCopy);
+    document.removeEventListener('paste', this.onPaste);
+    this.listenersAttached = false;
+  }
+
+  ngOnDestroy() {
+    this.removeExamListeners();
+  }
 
   // Kör hela miljöskanningen
   callVMAnalyzer() {
@@ -113,35 +150,7 @@ export class Home {
       // Rensa input
       this.codeModel.update((current) => ({ ...current, code: '' }));
 
-      // Lyssna på fullscreen exit
-      const onCopy = function (e: ClipboardEvent) {
-        e.preventDefault();
-        console.log('Användaren försökte kopiera');
-      };
-
-      //const getTextAtTestStart = navigator.clipboard.readText(); läser data vid event start t.ex av provet.
-      const onPaste = function (e: ClipboardEvent) {
-        e.preventDefault();
-        const pastedText = e.clipboardData?.getData("text");
-        //Kan kolla om användaren har något i clipboard som inte finns i provet
-        console.log("Användaren försökte klistra in:", pastedText);
-        console.log('Användaren försökte klistra in');
-      };
-      const onFullscreenChange = () => {
-        if (!document.fullscreenElement) {
-          this.examActive = false;
-          this.examStatus = 'Fullskärm avslutad – prov avbrutet';
-
-          this.cdr.detectChanges();
-          document.removeEventListener('fullscreenchange', onFullscreenChange);
-          document.removeEventListener('copy', onCopy);
-          document.removeEventListener('paste', onPaste);
-        }
-      };
-
-      document.addEventListener('fullscreenchange', onFullscreenChange);
-      document.addEventListener('copy', onCopy);
-      document.addEventListener('paste', onPaste);
+      this.addExamListeners();
 
       this.examActive = true;
       this.startFullscreen.startFullscreen();

@@ -128,7 +128,7 @@ export class EnvironmentScanService {
 
     if (typeof ram === 'number') {
       ram <= 4
-        ? result.okFlags.push('2. Litet RAM')
+        ? result.susFlags.push('2. Litet RAM')
         : result.okFlags.push('2. Tillräckligt med RAM');
     } else {
       result.avoidedFlags.push('2. RAM info otillgänglig');
